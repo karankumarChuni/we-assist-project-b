@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import styles
 import Header from "./components/Header";
 import ItemList from "./components/ItemList";
 import ItemForm from "./components/ItemForm";
@@ -10,6 +12,7 @@ function App() {
     <Router>
       <div className="container">
         <Header />
+        <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           <Route path="/" element={<ItemList />} />
           <Route path="/add-item" element={<ItemForm />} />

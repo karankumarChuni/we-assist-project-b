@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { createItems, reset } from "../redux/slices/itemSlice";
 import { getItemTypes } from "../redux/slices/itemTypeSlice";
 import { Plus, Trash2, Save, Loader } from "lucide-react";
+import { toast } from "react-toastify";
 
 const ItemForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, isSuccess } = useSelector((state) => state.items);
+
+  const { isLoading, isSuccess, isError } = useSelector((state) => state.items);
   const { itemTypes } = useSelector((state) => state.itemTypes);
 
   const [items, setItems] = useState([
@@ -20,18 +22,26 @@ const ItemForm = () => {
     },
   ]);
 
+  const [submitted, setSubmitted] = useState(false); // ✅ Track form submission
+
   useEffect(() => {
     dispatch(getItemTypes());
+  }, [dispatch]);
 
-    if (isSuccess) {
+  useEffect(() => {
+    if (isSuccess && submitted) {
+      toast.success("Item added successfully!");
       dispatch(reset());
-      // navigate("/");
+      setSubmitted(false); // ✅ Reset submission state
+      navigate("/"); // Redirect after successful addition
     }
 
-    return () => {
+    if (isError && submitted) {
+      toast.error("Failed to add item. Please try again.");
       dispatch(reset());
-    };
-  }, [dispatch, isSuccess, navigate]);
+      setSubmitted(false);
+    }
+  }, [isSuccess, isError, dispatch, navigate, submitted]);
 
   const handleChange = (index, e) => {
     const { name, value, type, checked } = e.target;
@@ -66,16 +76,16 @@ const ItemForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate all items
     const isValid = items.every(
       (item) => item.name && item.itemType && item.purchaseDate
     );
 
     if (!isValid) {
-      alert("Please fill in all required fields for each item");
+      toast.warn("Please fill in all required fields.");
       return;
     }
 
+    setSubmitted(true); // ✅ Mark as submitted before dispatching
     dispatch(createItems(items));
   };
 

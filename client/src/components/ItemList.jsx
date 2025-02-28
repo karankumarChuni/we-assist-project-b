@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import {
   getItems,
   deleteItem,
@@ -11,10 +12,11 @@ import { Trash2, Edit, X, Check, Loader } from "lucide-react";
 
 const ItemList = () => {
   const dispatch = useDispatch();
-  const { items, isLoading, isError, message } = useSelector(
+  const { items, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.items
   );
   const { itemTypes } = useSelector((state) => state.itemTypes);
+
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -22,6 +24,8 @@ const ItemList = () => {
     purchaseDate: "",
     stockAvailable: false,
   });
+
+  const [actionType, setActionType] = useState(""); // ✅ Track which action is performed
 
   useEffect(() => {
     dispatch(getItems());
@@ -32,8 +36,27 @@ const ItemList = () => {
     };
   }, [dispatch]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      if (actionType === "delete") {
+        toast.success("Item deleted successfully!");
+      } else if (actionType === "update") {
+        toast.success("Item updated successfully!");
+      }
+
+      dispatch(reset());
+      setActionType(""); // ✅ Reset action type
+    }
+
+    if (isError) {
+      toast.error(message || "Something went wrong!");
+      dispatch(reset());
+    }
+  }, [isSuccess, isError, message, dispatch, actionType]);
+
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
+      setActionType("delete"); // ✅ Set action type before dispatch
       dispatch(deleteItem(id));
     }
   };
@@ -61,6 +84,7 @@ const ItemList = () => {
   };
 
   const handleUpdate = (id) => {
+    setActionType("update"); // ✅ Set action type before dispatch
     dispatch(
       updateItem({
         _id: id,
