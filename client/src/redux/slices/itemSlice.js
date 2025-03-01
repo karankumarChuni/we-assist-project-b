@@ -1,70 +1,83 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const API_URL = 'http://localhost:5000/api/items';
+// const API_URL = 'http://localhost:5000/api/items';
+const API_URL = `${import.meta.env.VITE_API_URL}/items`;
 
 // Get all items
-export const getItems = createAsyncThunk('items/getItems', async (_, thunkAPI) => {
-  try {
-    const response = await axios.get(API_URL);
-    return response.data;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message;
-    return thunkAPI.rejectWithValue(message);
+export const getItems = createAsyncThunk(
+  "items/getItems",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(API_URL);
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 // Create multiple items
-export const createItems = createAsyncThunk('items/createItems', async (itemsData, thunkAPI) => {
-  try {
-    const response = await axios.post(API_URL, itemsData);
-    return response.data;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message;
-    return thunkAPI.rejectWithValue(message);
+export const createItems = createAsyncThunk(
+  "items/createItems",
+  async (itemsData, thunkAPI) => {
+    try {
+      const response = await axios.post(API_URL, itemsData);
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 // Update an item
-export const updateItem = createAsyncThunk('items/updateItem', async (itemData, thunkAPI) => {
-  try {
-    const { _id, ...rest } = itemData;
-    const response = await axios.put(`${API_URL}/${_id}`, rest);
-    return response.data;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message;
-    return thunkAPI.rejectWithValue(message);
+export const updateItem = createAsyncThunk(
+  "items/updateItem",
+  async (itemData, thunkAPI) => {
+    try {
+      const { _id, ...rest } = itemData;
+      const response = await axios.put(`${API_URL}/${_id}`, rest);
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 // Delete an item
-export const deleteItem = createAsyncThunk('items/deleteItem', async (id, thunkAPI) => {
-  try {
-    await axios.delete(`${API_URL}/${id}`);
-    return id;
-  } catch (error) {
-    const message = error.response?.data?.message || error.message;
-    return thunkAPI.rejectWithValue(message);
+export const deleteItem = createAsyncThunk(
+  "items/deleteItem",
+  async (id, thunkAPI) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      return id;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
 const initialState = {
   items: [],
   isLoading: false,
   isSuccess: false,
   isError: false,
-  message: '',
+  message: "",
 };
 
 const itemSlice = createSlice({
-  name: 'items',
+  name: "items",
   initialState,
   reducers: {
     reset: (state) => {
       state.isLoading = false;
       state.isSuccess = false;
       state.isError = false;
-      state.message = '';
+      state.message = "";
     },
   },
   extraReducers: (builder) => {
