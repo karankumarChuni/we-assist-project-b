@@ -157,7 +157,7 @@ const ItemForm = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group check-avaliabity-box">
               <label
                 htmlFor={`stockAvailable-${index}`}
                 className="checkbox-container"
@@ -169,7 +169,7 @@ const ItemForm = () => {
                   checked={item.stockAvailable}
                   onChange={(e) => handleChange(index, e)}
                 />
-                In Stock
+                <h4>In Stock</h4>
               </label>
             </div>
 

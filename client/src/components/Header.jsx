@@ -7,7 +7,7 @@ const Header = () => {
     <header className="header">
       <div className="flex items-center gap-2">
         <Package size={24} color="#3498db" />
-        <h1>Inventory Management</h1>
+        <h1>We Assist Assignment</h1>
       </div>
       <nav>
         <ul className="flex gap-4">

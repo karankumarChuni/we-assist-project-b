@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import ItemList from "./components/ItemList";
 import ItemForm from "./components/ItemForm";
 import ItemTypeForm from "./components/ItemTypeForm";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/add-item" element={<ItemForm />} />
           <Route path="/types" element={<ItemTypeForm />} />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );

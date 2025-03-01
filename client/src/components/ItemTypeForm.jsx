@@ -7,6 +7,8 @@ import {
   reset,
 } from "../redux/slices/itemTypeSlice";
 import { Trash2, Plus, Loader } from "lucide-react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ItemTypeForm = () => {
   const dispatch = useDispatch();
@@ -14,6 +16,7 @@ const ItemTypeForm = () => {
     (state) => state.itemTypes
   );
   const [name, setName] = useState("");
+  const [actionTriggered, setActionTriggered] = useState(false); // Track action
 
   useEffect(() => {
     dispatch(getItemTypes());
@@ -24,25 +27,44 @@ const ItemTypeForm = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isSuccess) {
-      setName("");
+    if (actionTriggered) {
+      // Only show toast if an action was triggered (not on delete)
+      if (isSuccess) {
+        toast.success("Item type added successfully!");
+        setName("");
+      }
+
+      if (isError) {
+        toast.error(message || "An error occurred.");
+      }
+
+      setActionTriggered(false); // Reset local state after showing toast
+      dispatch(reset()); // Reset Redux state to prevent re-triggering
     }
-  }, [isSuccess]);
+  }, [isSuccess, isError, message, dispatch, actionTriggered]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!name.trim()) {
-      alert("Please enter a type name");
+      toast.warning("Please enter a type name.");
       return;
     }
 
+    setActionTriggered(true); // Track form submission action
     dispatch(createItemType({ name }));
   };
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this item type?")) {
-      dispatch(deleteItemType(id));
+      dispatch(deleteItemType(id))
+        .unwrap()
+        .then(() => {
+          toast.success("Item type deleted successfully!"); // Toast only here for delete
+        })
+        .catch(() => {
+          toast.error("Failed to delete item type.");
+        });
     }
   };
 
@@ -50,7 +72,6 @@ const ItemTypeForm = () => {
     <div className="grid grid-cols-2 gap-4">
       <div className="card">
         <h2>Add Item Type</h2>
-        {isError && <div className="alert alert-danger">{message}</div>}
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="form-group">
             <label htmlFor="name">Type Name</label>
@@ -87,11 +108,11 @@ const ItemTypeForm = () => {
         {itemTypes.length === 0 ? (
           <p className="mt-4">No item types found. Please add some.</p>
         ) : (
-          <ul className="mt-4">
+          <ul className="mt-4 ">
             {itemTypes.map((type) => (
               <li
                 key={type._id}
-                className="flex justify-between items-center p-2 border-b"
+                className="flex item-type-icon justify-between items-center p-2 border-b "
               >
                 <span>{type.name}</span>
                 <button
